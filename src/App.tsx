@@ -11,6 +11,7 @@ import { FaqAssistant } from './components/FaqAssistant';
 import { BadgeNotification } from './components/BadgeNotification';
 import { LandingPage } from './components/LandingPage';
 import { GlobalChatbot } from './components/GlobalChatbot';
+import { GoogleServicesPanel } from './components/GoogleServicesPanel';
 
 import { lessons } from './data/lessons';
 import {
@@ -300,6 +301,9 @@ export default function App() {
               )}
             </AnimatePresence>
           </div>
+
+          {/* Activity List */}
+          <GoogleServicesPanel />
 
           {/* Activity List */}
           <div className="bg-white rounded-2xl p-6 border border-outline-variant shadow-sm">

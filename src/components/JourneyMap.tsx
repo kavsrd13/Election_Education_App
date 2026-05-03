@@ -38,7 +38,10 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({
   const progressPercent = Math.round((completedSteps.length / lessons.length) * 100);
 
   return (
-    <section className="col-span-12 mb-4 bg-white rounded-2xl p-4 shadow-md border border-outline-variant relative overflow-hidden">
+    <section
+      className="col-span-12 mb-4 bg-white rounded-2xl p-4 shadow-md border border-outline-variant relative overflow-hidden"
+      aria-labelledby="journey-map-title"
+    >
       <div className="absolute inset-0 journey-path opacity-10"></div>
       
       <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -47,7 +50,7 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({
             <span className="material-symbols-outlined">map</span>
           </div>
           <div>
-            <h2 className="font-h2 text-xl text-primary font-bold">Progress Road</h2>
+            <h2 id="journey-map-title" className="font-h2 text-xl text-primary font-bold">Progress Road</h2>
             <p className="text-on-surface-variant text-[10px] font-medium uppercase tracking-wider">Step-by-step Journey</p>
           </div>
         </div>
@@ -65,12 +68,12 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({
             ></div>
           </div>
 
-          <div className="flex items-center gap-8 relative">
+          <div className="flex items-center gap-8 relative" role="list" aria-label="Lesson progression steps">
             {lessons.map((lesson, idx) => {
               const state = getNodeState(lesson.id);
               
               return (
-                <div key={lesson.id} className={`flex flex-col items-center gap-1.5 min-w-[70px] relative ${state === 'locked' ? 'opacity-40' : 'group'}`}>
+                <div key={lesson.id} role="listitem" className={`flex flex-col items-center gap-1.5 min-w-[70px] relative ${state === 'locked' ? 'opacity-40' : 'group'}`}>
                   
                   {/* Animated Avatar - Compact */}
                   <AnimatePresence>
@@ -94,6 +97,7 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({
                     ref={lesson.id === currentStep ? currentNodeRef : undefined}
                     onClick={() => onStepClick(lesson.id)}
                     disabled={state === 'locked'}
+                    aria-current={state === 'current' ? 'step' : undefined}
                     aria-label={`Step ${lesson.id}: ${lesson.title} — ${state}`}
                     className={[
                       'w-10 h-10 rounded-full flex items-center justify-center shadow-md ring-2 ring-white relative z-10 transition-transform',

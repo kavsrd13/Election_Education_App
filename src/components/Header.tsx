@@ -26,7 +26,14 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           <span className="hidden sm:inline">Election Journey</span>
         </span>
-        <div className="hidden md:flex h-1.5 bg-surface-container-high w-48 rounded-full ml-4 overflow-hidden shadow-inner">
+        <div
+          className="hidden md:flex h-1.5 bg-surface-container-high w-48 rounded-full ml-4 overflow-hidden shadow-inner"
+          role="progressbar"
+          aria-label="Journey completion"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progressPercent}
+        >
           <div className="h-full bg-secondary transition-all duration-1000" style={{ width: `${progressPercent}%` }}></div>
         </div>
         <span className="hidden md:block text-label-caps text-secondary font-bold ml-2">STEP {currentStep} / {totalSteps}</span>
@@ -36,6 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
           onClick={onReset}
           className="flex items-center gap-1 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-all border border-transparent hover:border-outline-variant text-sm font-semibold"
           title="Reset Progress"
+          aria-label="Reset all progress"
         >
           <RotateCcw size={16} />
           <span className="hidden sm:inline">Reset</span>

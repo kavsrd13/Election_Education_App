@@ -1,18 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send, Bot, User, Loader2 } from 'lucide-react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import ReactMarkdown from 'react-markdown';
-
-// Initialize the Gemini API
-// Make sure to add VITE_GEMINI_API_KEY to your .env.local file
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(apiKey || '');
-
-const SYSTEM_INSTRUCTION = `You are an official AI guide for the Election Journey platform. 
-Your goal is to educate citizens about the democratic process, voting eligibility, and election procedures in India. 
-Always be polite, encouraging, and provide accurate, politically neutral information. 
-IMPORTANT: Your answers MUST be extremely simple, short, and concise. Do NOT use the words "Election Commission of India". Use markdown formatting to make your answers readable (bullet points, bold text).`;
 
 interface Message {
   id: string;
@@ -23,48 +12,18 @@ interface Message {
 
 export const GlobalChatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 'welcome-msg',
+      role: 'model',
+      text: "Hello! I'm your Election Journey guide. How can I help you understand the voting process today?",
+      timestamp: new Date(),
+    },
+  ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const chatSessionRef = useRef<any>(null);
-
-  // Initialize chat session on mount
-  useEffect(() => {
-    if (!apiKey) {
-      console.error("Gemini API key is missing. Please set VITE_GEMINI_API_KEY in your environment.");
-      return;
-    }
-
-    try {
-      const model = genAI.getGenerativeModel({ 
-        model: "gemini-2.5-flash",
-        systemInstruction: SYSTEM_INSTRUCTION
-      });
-
-      chatSessionRef.current = model.startChat({
-        generationConfig: {
-          temperature: 0.7,
-          topP: 0.95,
-          topK: 40,
-          maxOutputTokens: 8192,
-        },
-        history: [],
-      });
-
-      // Add welcome message
-      setMessages([
-        {
-          id: 'welcome-msg',
-          role: 'model',
-          text: "Hello! I'm your Election Journey guide. How can I help you understand the voting process today?",
-          timestamp: new Date(),
-        }
-      ]);
-    } catch (error) {
-      console.error("Failed to initialize Gemini:", error);
-    }
-  }, []);
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
@@ -77,10 +36,7 @@ export const GlobalChatbot: React.FC = () => {
     e.preventDefault();
     
     if (!input.trim() || isLoading) return;
-    if (!apiKey) {
-      alert("API Key is missing. The chatbot cannot function.");
-      return;
-    }
+    setErrorMessage(null);
 
     const userMessageText = input.trim();
     setInput('');
@@ -97,11 +53,28 @@ export const GlobalChatbot: React.FC = () => {
     setIsLoading(true);
 
     try {
-      if (!chatSessionRef.current) throw new Error("Chat session not initialized");
+      const history = [...messages, userMessage].map((msg) => ({
+        role: msg.role,
+        text: msg.text,
+      }));
 
-      // Send to Gemini
-      const result = await chatSessionRef.current.sendMessage(userMessageText);
-      const responseText = result.response.text();
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessageText,
+          history,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch chatbot response');
+      }
+
+      const data = (await response.json()) as { text?: string };
+      const responseText = data.text?.trim() || 'I could not generate a response.';
 
       // Add model response to UI
       const modelMessage: Message = {
@@ -114,6 +87,7 @@ export const GlobalChatbot: React.FC = () => {
       setMessages(prev => [...prev, modelMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
+      setErrorMessage('Chat service is temporarily unavailable. Please try again.');
       
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
@@ -158,7 +132,12 @@ export const GlobalChatbot: React.FC = () => {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 bg-surface-container-lowest space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 bg-surface-container-lowest space-y-4" aria-live="polite" role="log" aria-label="Chat conversation">
+              {errorMessage && (
+                <div className="rounded-lg bg-error_container text-on_error_container text-xs px-3 py-2 border border-error/20" role="alert">
+                  {errorMessage}
+                </div>
+              )}
               {messages.map((msg) => (
                 <div 
                   key={msg.id} 
@@ -209,6 +188,7 @@ export const GlobalChatbot: React.FC = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask a question about voting..."
+                  aria-label="Ask a question about voting"
                   className="flex-1 bg-surface-container-low border border-outline-variant rounded-full py-3 pl-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                   disabled={isLoading}
                 />

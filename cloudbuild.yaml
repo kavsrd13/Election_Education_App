@@ -4,24 +4,14 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/promptwatvirtual/election-journey:$COMMIT_SHA'
-      - '-t'
-      - 'gcr.io/promptwatvirtual/election-journey:latest'
-      - '--build-arg'
-      - 'VITE_GEMINI_API_KEY=$$VITE_GEMINI_API_KEY'
+      - 'us-central1-docker.pkg.dev/promptwatvirtual/election-journey-repo/election-journey:latest'
       - '.'
-    secretEnv: ['VITE_GEMINI_API_KEY']
 
-  # Step 2: Push the image to Container Registry
+  # Step 2: Push the image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'gcr.io/promptwatvirtual/election-journey:$COMMIT_SHA'
-
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'gcr.io/promptwatvirtual/election-journey:latest'
+      - 'us-central1-docker.pkg.dev/promptwatvirtual/election-journey-repo/election-journey:latest'
 
   # Step 3: Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -30,7 +20,7 @@ steps:
       - 'run'
       - 'deploy'
       - 'election-journey'
-      - '--image=gcr.io/promptwatvirtual/election-journey:$COMMIT_SHA'
+      - '--image=us-central1-docker.pkg.dev/promptwatvirtual/election-journey-repo/election-journey:latest'
       - '--region=us-central1'
       - '--platform=managed'
       - '--allow-unauthenticated'
@@ -39,16 +29,10 @@ steps:
       - '--cpu=1'
       - '--min-instances=0'
       - '--max-instances=3'
-      - '--set-env-vars=VITE_GEMINI_API_KEY=$$VITE_GEMINI_API_KEY'
-
-availableSecrets:
-  secretManager:
-    - versionName: projects/promptwatvirtual/secrets/VITE_GEMINI_API_KEY/versions/latest
-      env: 'VITE_GEMINI_API_KEY'
+      - '--set-secrets=GEMINI_API_KEY=gemini-api-key:latest'
 
 images:
-  - 'gcr.io/promptwatvirtual/election-journey:$COMMIT_SHA'
-  - 'gcr.io/promptwatvirtual/election-journey:latest'
+  - 'us-central1-docker.pkg.dev/promptwatvirtual/election-journey-repo/election-journey:latest'
 
 options:
   logging: CLOUD_LOGGING_ONLY
