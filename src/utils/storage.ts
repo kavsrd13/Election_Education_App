@@ -8,6 +8,7 @@ export interface UserProgress {
   certificateGenerated: boolean;
   completedDate: string | null;
   badgeUnlocked: string[];
+  hasSeenWelcome: boolean;
 }
 
 const STORAGE_KEY = 'election-journey-progress';
@@ -20,6 +21,7 @@ export const defaultProgress: UserProgress = {
   certificateGenerated: false,
   completedDate: null,
   badgeUnlocked: [],
+  hasSeenWelcome: false,
 };
 
 export function loadProgress(): UserProgress {

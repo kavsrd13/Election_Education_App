@@ -2,6 +2,7 @@ import React from 'react';
 
 interface LandingPageProps {
   onStart: () => void;
+  onRevisitWelcome: () => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
@@ -29,6 +30,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               >
                 Start Your Journey
                 <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+              </button>
+              <button 
+                onClick={onRevisitWelcome}
+                className="bg-white text-primary border border-primary font-button text-[16px] px-8 py-4 rounded-[1rem] shadow-sm hover:bg-slate-50 transition-all flex items-center gap-2 group font-semibold"
+              >
+                Why Vote?
+                <span className="material-symbols-outlined text-[18px]">info</span>
               </button>
             </div>
             <div className="flex items-center gap-[24px]">

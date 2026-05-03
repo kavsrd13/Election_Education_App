@@ -10,6 +10,7 @@ import { LessonCard } from './components/LessonCard';
 import { FaqAssistant } from './components/FaqAssistant';
 import { BadgeNotification } from './components/BadgeNotification';
 import { LandingPage } from './components/LandingPage';
+import { WelcomePage } from './components/WelcomePage';
 
 import { lessons } from './data/lessons';
 import {
@@ -140,6 +141,18 @@ export default function App() {
   const currentLesson = lessons.find((l) => l.id === viewStep);
   const isCompleted = progress.completedSteps.includes(viewStep);
 
+  if (!progress.hasSeenWelcome) {
+    return (
+      <WelcomePage 
+        onContinue={() => {
+          const updated = { ...progress, hasSeenWelcome: true };
+          setProgress(updated);
+          saveProgress(updated);
+        }} 
+      />
+    );
+  }
+
   if (!hasStarted) {
     return (
       <div className="min-h-screen bg-surface">
@@ -165,7 +178,14 @@ export default function App() {
             </div>
           </div>
         </header>
-        <LandingPage onStart={() => setHasStarted(true)} />
+        <LandingPage 
+          onStart={() => setHasStarted(true)} 
+          onRevisitWelcome={() => {
+            const updated = { ...progress, hasSeenWelcome: false };
+            setProgress(updated);
+            saveProgress(updated);
+          }}
+        />
       </div>
     );
   }
