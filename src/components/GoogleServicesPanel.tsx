@@ -4,10 +4,17 @@ import { ExternalLink, MapPin, Search } from 'lucide-react';
 export const GoogleServicesPanel: React.FC = () => {
   const [location, setLocation] = useState('');
 
-  const mapsUrl = useMemo(() => {
-    const query = location.trim() || 'Polling booth near me India';
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+  const query = useMemo(() => {
+    return location.trim() || 'Polling booth near me India';
   }, [location]);
+
+  const mapsUrl = useMemo(() => {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+  }, [query]);
+
+  const mapsEmbedUrl = useMemo(() => {
+    return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+  }, [query]);
 
   const voterSearchUrl =
     'https://www.google.com/search?q=' +
@@ -16,6 +23,11 @@ export const GoogleServicesPanel: React.FC = () => {
   const youtubeLearnUrl =
     'https://www.youtube.com/results?search_query=' +
     encodeURIComponent('EVM VVPAT voting process India');
+
+  const translateUrl =
+    'https://translate.google.com/?sl=auto&tl=en&text=' +
+    encodeURIComponent('मतदान लोकतंत्र की शक्ति है') +
+    '&op=translate';
 
   return (
     <section
@@ -108,6 +120,37 @@ export const GoogleServicesPanel: React.FC = () => {
             Open videos
             <ExternalLink size={14} />
           </a>
+        </div>
+
+        <div className="rounded-xl border border-outline-variant p-4 bg-surface-container-lowest">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="material-symbols-outlined text-base text-primary">public</span>
+            <h5 className="text-sm font-bold text-on-surface">Google Translate Assist</h5>
+          </div>
+          <p className="text-xs text-on-surface-variant mb-3">
+            Translate civic phrases for multilingual accessibility.
+          </p>
+          <a
+            href={translateUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+            aria-label="Open Google Translate with sample civic phrase"
+          >
+            Open translate
+            <ExternalLink size={14} />
+          </a>
+        </div>
+
+        <div className="rounded-xl border border-outline-variant p-3 bg-white">
+          <h5 className="text-xs font-bold text-on-surface mb-2">Live Booth Search Preview</h5>
+          <iframe
+            title="Google Maps polling booth preview"
+            src={mapsEmbedUrl}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="w-full h-40 rounded-lg border border-outline-variant"
+          />
         </div>
       </div>
     </section>

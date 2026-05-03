@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { toSafeHistory } from './chatSanitizer.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,8 +19,6 @@ Always be polite, encouraging, and provide accurate, politically neutral informa
 IMPORTANT: Your answers MUST be extremely simple, short, and concise. Do NOT use the words "Election Commission of India". Use markdown formatting to make your answers readable (bullet points, bold text).`;
 
 const MAX_MESSAGE_LENGTH = 600;
-const MAX_HISTORY_ITEMS = 12;
-const MAX_HISTORY_TEXT_LENGTH = 1200;
 
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
@@ -54,23 +53,6 @@ app.use(
     legacyHeaders: false,
   })
 );
-
-function toSafeHistory(history) {
-  if (!Array.isArray(history)) return [];
-
-  return history
-    .slice(-MAX_HISTORY_ITEMS)
-    .filter((entry) => entry && (entry.role === 'user' || entry.role === 'model'))
-    .map((entry) => ({
-      role: entry.role,
-      text: String(entry.text || '').slice(0, MAX_HISTORY_TEXT_LENGTH),
-    }))
-    .filter((entry) => entry.text.trim().length > 0)
-    .map((entry) => ({
-      role: entry.role,
-      parts: [{ text: entry.text }],
-    }));
-}
 
 app.post('/api/chat', async (req, res) => {
   try {
