@@ -40,12 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
           <RotateCcw size={16} />
           <span className="hidden sm:inline">Reset</span>
         </button>
-        <button className="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-all">
-          <span className="material-symbols-outlined">help</span>
-        </button>
-        <button className="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-all">
-          <span className="material-symbols-outlined">account_circle</span>
-        </button>
+        {/* Removed non-functional help and account buttons */}
       </div>
     </header>
   );

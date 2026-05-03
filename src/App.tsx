@@ -10,6 +10,7 @@ import { LessonCard } from './components/LessonCard';
 import { FaqAssistant } from './components/FaqAssistant';
 import { BadgeNotification } from './components/BadgeNotification';
 import { LandingPage } from './components/LandingPage';
+import { GlobalChatbot } from './components/GlobalChatbot';
 
 import { lessons } from './data/lessons';
 import {
@@ -152,17 +153,7 @@ export default function App() {
               </div>
               <div className="text-xl font-bold text-primary tracking-tight font-h2">Election Journey</div>
             </div>
-            <div className="hidden md:flex items-center gap-[24px]">
-              <nav className="flex gap-1">
-                <a className="font-sans text-sm font-semibold tracking-wide text-on-surface-variant hover:text-primary hover:bg-blue-50 transition-all px-4 py-2 rounded-full" href="#">Home</a>
-                <a className="font-sans text-sm font-semibold tracking-wide text-on-surface-variant hover:text-primary hover:bg-blue-50 transition-all px-4 py-2 rounded-full" href="#">About India's ECI</a>
-                <a className="font-sans text-sm font-semibold tracking-wide text-on-surface-variant hover:text-primary hover:bg-blue-50 transition-all px-4 py-2 rounded-full" href="#">Resources</a>
-              </nav>
-              <div className="flex gap-2 items-center pl-4 border-l border-slate-200">
-                <button className="material-symbols-outlined text-primary hover:bg-slate-100 p-2 rounded-full transition-colors">search</button>
-                <button className="material-symbols-outlined text-primary hover:bg-slate-100 p-2 rounded-full transition-colors">account_circle</button>
-              </div>
-            </div>
+            {/* Removed unnecessary navigation and buttons */}
           </div>
         </header>
         <LandingPage onStart={() => setHasStarted(true)} />
@@ -346,6 +337,8 @@ export default function App() {
           </div>
         </aside>
       </main>
+
+      <GlobalChatbot />
 
       {/* Footer */}
       <footer className="mt-12 py-6 border-t border-slate-200 text-center">

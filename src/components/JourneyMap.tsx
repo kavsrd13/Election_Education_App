@@ -38,51 +38,52 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({
   const progressPercent = Math.round((completedSteps.length / lessons.length) * 100);
 
   return (
-    <section className="col-span-12 mb-4 bg-white rounded-2xl p-3 sm:p-4 shadow-sm border border-outline-variant relative overflow-hidden">
-      <div className="absolute inset-0 journey-path opacity-20"></div>
+    <section className="col-span-12 mb-4 bg-white rounded-2xl p-4 shadow-md border border-outline-variant relative overflow-hidden">
+      <div className="absolute inset-0 journey-path opacity-10"></div>
       
-      <div className="relative z-10 flex flex-col md:flex-row items-center gap-4">
-        <div className="flex-shrink-0 flex items-center justify-between w-full md:w-auto gap-4">
-          <div>
-            <h2 className="font-h2 text-base text-primary mb-0 leading-none">Your Progress Road</h2>
+      <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+            <span className="material-symbols-outlined">map</span>
           </div>
-          <span className="bg-primary/10 px-3 py-1 rounded-full text-[10px] font-bold text-primary uppercase tracking-wider border border-primary/20 whitespace-nowrap">
-            {progressPercent}%
-          </span>
+          <div>
+            <h2 className="font-h2 text-xl text-primary font-bold">Progress Road</h2>
+            <p className="text-on-surface-variant text-[10px] font-medium uppercase tracking-wider">Step-by-step Journey</p>
+          </div>
         </div>
 
-        {/* Illustrative Road Map */}
+        {/* Illustrative Road Map - Compact */}
         <div 
           ref={containerRef}
-          className="relative flex items-center justify-start py-4 px-4 overflow-x-auto scrollbar-hide flex-1 w-full"
+          className="flex-1 relative flex items-center justify-start pt-12 pb-2 px-4 overflow-x-auto scrollbar-hide max-w-full lg:max-w-[70%]"
         >
           {/* The Road Track */}
-          <div className="absolute left-4 right-4 h-2 bg-surface-container-highest rounded-full shadow-inner z-0 min-w-[600px] md:min-w-0">
+          <div className="absolute left-4 right-8 h-2 bg-surface-container-highest rounded-full shadow-inner z-0 min-w-[600px]">
             <div 
               className="h-full bg-gradient-to-r from-green-500 to-secondary rounded-full transition-all duration-1000" 
               style={{ width: `${progressPercent}%` }}
             ></div>
           </div>
 
-          <div className="flex items-center gap-6 sm:gap-8 relative min-w-[600px] md:min-w-0">
+          <div className="flex items-center gap-8 relative">
             {lessons.map((lesson, idx) => {
               const state = getNodeState(lesson.id);
               
               return (
-                <div key={lesson.id} className={`flex flex-col items-center gap-1 min-w-[40px] relative ${state === 'locked' ? 'opacity-60' : 'group'}`}>
+                <div key={lesson.id} className={`flex flex-col items-center gap-1.5 min-w-[70px] relative ${state === 'locked' ? 'opacity-40' : 'group'}`}>
                   
-                  {/* Animated Avatar */}
+                  {/* Animated Avatar - Compact */}
                   <AnimatePresence>
                     {state === 'current' && (
                       <motion.div
                         initial={{ opacity: 0, y: -10, scale: 0 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, scale: 0 }}
-                        className="absolute -top-10 left-1/2 -translate-x-1/2 w-8 h-8 avatar-float z-20 pointer-events-none"
+                        className="absolute -top-12 left-1/2 -translate-x-1/2 w-10 h-10 avatar-float z-20 pointer-events-none"
                       >
                         <img 
                           alt="Voter Avatar" 
-                          className="w-full h-full drop-shadow-md" 
+                          className="w-full h-full drop-shadow-lg" 
                           src="https://img.icons8.com/color/96/person-male.png" 
                         />
                       </motion.div>
@@ -95,29 +96,29 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({
                     disabled={state === 'locked'}
                     aria-label={`Step ${lesson.id}: ${lesson.title} — ${state}`}
                     className={[
-                      'w-8 h-8 rounded-full flex items-center justify-center shadow-md ring-2 ring-white relative z-10 transition-transform',
+                      'w-10 h-10 rounded-full flex items-center justify-center shadow-md ring-2 ring-white relative z-10 transition-transform',
                       state === 'completed'
                         ? 'bg-green-500 text-white hover:scale-110'
                         : state === 'current'
                         ? 'bg-secondary text-white shadow-[0_0_15px_rgba(181,0,95,0.4)] animate-pulse'
-                        : 'bg-surface-container-high text-outline-variant w-6 h-6 my-1',
+                        : 'bg-surface-container-high text-outline-variant',
                     ].join(' ')}
                   >
                     {state === 'completed' ? (
-                      <span className="material-symbols-outlined text-lg">check</span>
+                      <span className="material-symbols-outlined text-xl">check</span>
                     ) : state === 'locked' ? (
-                      <span className="material-symbols-outlined text-sm">lock</span>
+                      <span className="material-symbols-outlined text-base">lock</span>
                     ) : (
-                      <span className="material-symbols-outlined text-lg">person_check</span>
+                      <span className="material-symbols-outlined text-xl">person_check</span>
                     )}
                   </button>
 
                   <span 
                     className={[
-                      'font-label-caps text-center tracking-tight truncate w-16',
-                      state === 'completed' ? 'text-green-600 font-bold text-[8px]' 
-                        : state === 'current' ? 'text-secondary font-extrabold text-[9px]'
-                        : 'text-outline-variant text-[8px] font-medium hidden sm:block'
+                      'text-center tracking-tight truncate max-w-[60px]',
+                      state === 'completed' ? 'text-green-600 font-bold text-[8px] uppercase' 
+                        : state === 'current' ? 'text-secondary font-black text-[9px] uppercase'
+                        : 'text-outline-variant text-[8px] font-medium'
                     ].join(' ')}
                   >
                     {lesson.badgeLabel}
@@ -126,6 +127,11 @@ export const JourneyMap: React.FC<JourneyMapProps> = ({
               );
             })}
           </div>
+        </div>
+
+        <div className="hidden lg:flex flex-col items-end">
+          <span className="text-[10px] font-black text-secondary uppercase tracking-[0.2em] mb-1">Status</span>
+          <span className="text-2xl font-black text-primary leading-none">{progressPercent}%</span>
         </div>
       </div>
     </section>
